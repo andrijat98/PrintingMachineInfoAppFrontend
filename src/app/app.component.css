@@ -1,0 +1,25 @@
+.modal-header {
+  background-color: rgb(104, 104, 104);
+  color: white;
+}
+
+mat-grid-tile {
+  border: 1px solid gray;
+}
+
+mat-grid-list {
+  margin-top: 20px;
+}
+
+.btn-remove-image {
+  position: absolute;
+  cursor: pointer;
+  top: -10px;
+  right: -10px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  text-align: center;
+}

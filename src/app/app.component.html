@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <title>Bare - Start Bootstrap Template</title>
+</head>
+
+<body>
+  <!-- Responsive navbar-->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">Sve o štamparskim mašinama</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+          class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" *ngIf="user.checkIfUserIsAdmin()" aria-current="page" (click)="onOpenModal(undefined, 'add')"
+              href="#">Dodaj Mašinu</a></li>
+          <li class="nav-item"><a class="nav-link" *ngIf="!user.isUserLoggedIn()" aria-current="page" href="#" (click)="onOpenModal(undefined, 'login')">Prijava</a></li>
+          <li class="nav-item"><a class="nav-link" *ngIf="user.isUserLoggedIn()" aria-current="page" href="#" (click)="logout()">{{user.getUsername()}} (Odjavi se)</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- Page content-->
+  <div class="container" id="main">
+    <div class="text-center mt-5">
+      <h1>Informacije o štamparskim mašinama</h1>
+      <p class="lead">Klik na karticu za više informacija o mašini</p>
+      <form class="form-inline my-2 my-lg-0">
+        <input type="search" (ngModelChange)="searchMachines(key.value)" #key="ngModel" ngModel name="key" id="searchName" class="form-control mr-sm-2" placeholder="Pretraži mašine">
+      </form>
+    </div>
+    <br />
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <div *ngFor="let machine of machines" class="col">
+        <div class="card">
+          <img src={{machine.imagesToBeDisplayed[0]}} class="card-img-top"
+            alt="...">
+            <h5 class="card-header text-bg-dark p-3">{{machine.manufacturer}} {{machine.model}}</h5>
+          <div class="card-body">
+            <p class="card-text">{{machine.printingTechnique}} štampa</p>
+            <p class="card-text">Maks format: {{machine.maxFormat}}</p>
+            <p class="card-text">Min format: {{machine.minFormat}}</p>
+            <button type="button" class="btn btn-primary" (click)="onOpenInfoModal(machine)">Više
+              informacija</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal info-->
+  <div class="modal fade" id="modalInfo" tabindex="-1" aria-labelledby="machineInfoModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="machineInfoModal">{{machineInfo.manufacturer}} {{machineInfo.model}}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="card text-bg-light mb-3">
+
+            <div *ngIf="machineInfo.imagesToBeDisplayed.length > 1" id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner" style="height: 50%;">
+                <div class="carousel-item active">
+                  <img class="d-block w-100" src={{machineInfo.imagesToBeDisplayed[0]}} alt="First slide">
+                </div>
+                <div *ngFor="let image of machineInfo.imagesToBeDisplayed; let i = index; first as isFirst">
+                  <div *ngIf="!isFirst" class="carousel-item">
+                    <img class="d-block w-100" src={{machineInfo.imagesToBeDisplayed[i]}} alt="Second slide">
+                  </div>
+                </div>
+              </div>
+              <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Prethodno</span>
+              </a>
+              <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-bs-slide="next">
+                <span class="sr-only">Sledeće</span>
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              </a>
+            </div>
+
+            <img *ngIf="machineInfo.imagesToBeDisplayed.length == 1" [src]="machineInfo.imagesToBeDisplayed[0]" class="card-img-top"
+              alt="...">
+            <div class="card-header fs-4">{{machineInfo.manufacturer}} {{machineInfo.model}}</div>
+            <div class="card-body">
+              <p class="card-text">Tehnika štampe: {{machineInfo.printingTechnique}}</p>
+              <p class="card-text">Štamparskih agregata: {{machineInfo.printingUnits}}</p>
+              <p class="card-text" *ngIf="machineInfo?.hasPerfector == true">Ima perfektor: Da</p>
+              <p class="card-text" *ngIf="machineInfo?.hasPerfector == false">Ima perfektor: Ne</p>
+              <p class="card-text">Maks format: {{machineInfo.maxFormat}}</p>
+              <p class="card-text">Min format: {{machineInfo.minFormat}}</p>
+              <p class="card-text">Brzina štampe: {{machineInfo.impressionsPerHour}} otisaka/sat</p>
+              <p class="card-text">Veličina: {{machineInfo.length}} (Dužina) x {{machineInfo.height}} (Visina) x
+                {{machineInfo.width}} (širina)</p>
+              <p class="card-text">Opis: {{machineInfo.description}}</p>
+              <p class="card-text"><small class="text-muted">Dodato: {{machineInfo.dateAdded}}</small></p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" *ngIf="user.checkIfUserIsAdmin()" (click)="onOpenModal(machineInfo, 'delete')">Izbriši</button>
+            <button type="button" id="machineInfoCloseButton" class="btn btn-secondary"
+              data-bs-dismiss="modal">Zatvori</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add machine modal-->
+  <div class="modal fade" id="addMachine"tabindex="-1" aria-labelledby="addMachineLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addMachineLabel">Dodaj mašinu</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form class="row g-3" #addMachineForm="ngForm" enctype="multipart/form-data"
+            (ngSubmit)="onAddMachine(addMachineForm)">
+            <div class="col-md-4">
+              <label for="manufacturer" class="col-form-label">Proizvođač:</label>
+              <input type="text" class="form-control" id="manufacturer" ngModel name="machineManufacturer" required>
+            </div>
+            <div class="col-md-4">
+              <label for="machineModel" class="col-form-label">Model:</label>
+              <input type="text" class="form-control" id="machineModel" ngModel name="machineModel" required>
+            </div>
+            <div class="col-md-4">
+              <label for="printingTechique" class="col-form-label">Tehnika štampe:</label>
+              <div class="input-group mb-3">
+                <select class="form-select" id="printingTechique" ngModel name="machinePrintingTechnique" required>
+                  <option value="Ofset">Ofset</option>
+                  <option value="Duboka">Duboka</option>
+                  <option value="Visoka">Visoka</option>
+                  <option value="Propusna">Propusna</option>
+                  <option value="Digitalna">Digitalna</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="pritingUnits" class="col-form-label">Broj štamparskih agregata:</label>
+              <input type="text" class="form-control" id="pritingUnits" ngModel name="machinePrintingUnits" required>
+            </div>
+            <div class="col-md-4">
+              <label for="pritingSpeed" class="col-form-label">Brzina štampe:</label>
+              <div class="input-group mb-3">
+                <input type="text" id="printingSpeed" class="form-control" id="impressionsPerHour" ngModel
+                  name="machineImpressionsPerHour" aria-label="maxFormat" aria-describedby="basic-addon2" required>
+                <span class="input-group-text" id="basic-addon2">tabaka/sat</span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label for="maxFormatH" class="col-form-label">Najveci format:</label>
+              <div class="input-group mb-3">
+                <input type="text" class="form-control d-inline" id="maxFormatH" placeholder="Visina" ngModel
+                  name="machineMaxFormatHeight" aria-label="maxFormat" aria-describedby="basic-addon2" required>
+                <span class="input-group-text d-inline me-1" id="basic-addon2">mm</span>
+                <label class="col-form-label d-inline" for="maxFormatW">X</label>
+                <input type="text" class="form-control d-inline ms-1" id="maxFormatW" placeholder="Širina" ngModel
+                  name="machineMaxFormatWidth" aria-label="maxFormat" aria-describedby="basic-addon2" required>
+                <span class="input-group-text" id="basic-addon2">mm</span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label for="minFormatH" class="col-form-label d-block">Najmanji format:</label>
+              <div class="input-group mb-3">
+                <input type="text" class="form-control d-inline" id="minFormatH" placeholder="Visina" ngModel
+                  name="machineMinFormatHeight" aria-label="minFormat" aria-describedby="basic-addon2" required>
+                <span class="input-group-text d-inline me-1" id="basic-addon2">mm</span>
+                <label class="col-form-label d-inline" for="minFormatW">X</label>
+                <input type="text" class="form-control d-inline ms-1" id="minFormatW" placeholder="Širina" ngModel
+                  name="machineMinFormatWidth" aria-label="minFormat" aria-describedby="basic-addon2" required>
+                <span class="input-group-text d-inline" id="basic-addon2">mm</span>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <label for="length" class="col-form-label">Dimenzije Mašine:</label>
+            </div>
+            <div class="col-md-12">
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" id="machineLength" ngModel name="machineLength"
+                  placeholder="Dužina" aria-label="maxFormat" aria-describedby="basic-addon2" required>
+                <span class="input-group-text" id="basic-addon2">m</span>
+                <input type="text" class="form-control" id="machineHeight" ngModel name="machineHeight"
+                  placeholder="Visina" aria-label="maxFormat" aria-describedby="basic-addon2" required>
+                <span class="input-group-text" id="basic-addon2">m</span>
+                <input type="text" class="form-control" id="machineWidth" ngModel name="machineWidth"
+                  placeholder="Širina" aria-label="maxFormat" aria-describedby="basic-addon2" required>
+                <span class="input-group-text" id="basic-addon2">m</span>
+              </div>
+            </div>
+            <div class="col-md-12">
+            <div class="form-check">
+              <label class="form-check-label" for="perfectorCheckbox">Ima perfektor</label>
+              <input class="form-check-input" type="checkbox" ngModel name="machineHasPerfector" value=""
+                id="perfectorCheckbox">
+            </div>
+          </div>
+            <div class="col-md-12">
+              <div class="input-group mb-3">
+              <span class="input-group-text" id="basic-addon2">Opis:</span>
+              <textarea class="form-control" id="textarea" ngModel name="machineDescription"
+                aria-label="With textarea"></textarea>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <label for="addImages" class="col-form-label">Dodaj slike:</label>
+              <div class="input-group mb-3">
+                <input type="file" accept="image/jpeg, image/png" multiple value="select" ngModel name="machineImages" class="form-control" id="addImages" (change)="onFileSelected($event)">
+                <!--<label class="input-group-text" name="image" for="addImages">Upload</label-->
+                <div class="col-md-12">
+                  <mat-grid-list cols="5" rowHeight="1:1">
+                    <mat-grid-tile *ngFor="let file of machineToBeAdded.images; let i = index">
+                      <div style="position: relative;">
+                        <span class="btn-remove-image" (click)="removeImage(i)">x</span>
+                        <img [src]="file.url" width="125px" height="125px">
+                      </div>
+                    </mat-grid-tile>
+                  </mat-grid-list>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" id="closeModalButton" class="btn btn-secondary"
+                data-bs-dismiss="modal">Zatvori</button>
+              <button [disabled]="addMachineForm.invalid" type="submit" class="btn btn-primary">Sačuvaj</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal to update-->
+
+  <!-- Modal to delete-->
+  <div class="modal fade" id="deleteMachine" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Brisanje Mašine</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Da li ste sigurni da želite da izbrišete {{machineInfo.manufacturer}} {{machineInfo.model}}?
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="deleteMachineModalButton" class="btn btn-secondary"
+            data-bs-dismiss="modal">Ne</button>
+          <button type="button" class="btn btn-primary" (click)="deleteMachine(machineInfo.id)"
+            data-bs-dismiss="modal">Da</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Login modal-->
+  <div class="modal" tabindex="-1" id="loginModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Admin pristup</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form #loginForm="ngForm">
+            <div class="mb-3">
+              <label for="userUsername" class="form-label">Korisničko ime</label>
+              <input type="email" class="form-control" id="userUsername" ngModel name="username">
+            </div>
+            <div class="mb-3">
+              <label for="userPassword" class="form-label">Lozinka</label>
+              <input type="password" class="form-control" id="userPassword" ngModel name="password">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeLoginModalButton">Close</button>
+          <button type="submit" class="btn btn-primary" (click)="login(loginForm)">Uloguj se</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
